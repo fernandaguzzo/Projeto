@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Reservas</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.css">
+</head>
+<body class="container">
+    <h1 class="text-center">Lista de Reservas</h1>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Cliente CPF</th>
+                <th>Pousada ID</th>
+                <th>Data Checkin</th>
+                <th>Data Checkout</th>
+                <th>Número de Pessoas</th>
+                <th>Preço</th>
+                <th>Método de Pagamento</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for reserva in reservas %}
+            <tr>
+                <td>{{ reserva['cliente_cpf'] }}</td>
+                <td>{{ reserva['pousada_id'] }}</td>
+                <td>{{ reserva['diaCheckin'] }}</td>
+                <td>{{ reserva['diaCheckout'] }}</td>
+                <td>{{ reserva['numeroDePessoas'] }}</td>
+                <td>{{ reserva['preco'] }}</td>
+                <td>{{ reserva['metodoPagamento'] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

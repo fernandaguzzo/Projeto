@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Pousadas</title>
+</head>
+<body>
+    <h1>Lista de Pousadas</h1>
+    <ul>
+        {% for pousada in pousadas %}
+        <li>{{ pousada.nome }} - Suporta {{ pousada.pessoasSuportadas }} pessoas</li>
+        {% endfor %}
+    </ul>
+    <a href="/cadastrar_pousada">Cadastrar nova pousada</a>
+</body>
+</html>
+
