@@ -1,7 +1,7 @@
-from tinydb import Query
+from tinydb import TinyDB, Query
 
 class Reserva:
-    def __init__(self, cliente_cpf, pousada_id, diaCheckin, diaCheckout, numeroDePessoas, preco, metodoPagamento, db):
+    def __init__(self, cliente_cpf, pousada_id, diaCheckin, diaCheckout, numeroDePessoas, preco, metodoPagamento, db=None):
         self.cliente_cpf = cliente_cpf
         self.pousada_id = pousada_id
         self.diaCheckin = diaCheckin
@@ -12,19 +12,15 @@ class Reserva:
         self.db = db
 
     def cadastrarReserva(self):
-        # Verificar se a pousada está cadastrada
-        pousada_existente = self.db.search((Query().idPousada == self.pousada_id) & (Query().tipo == 'pousada'))
-        if not pousada_existente:
-            return {'message': 'Pousada não cadastrada!'}
+        # Verificar se já existe uma reserva para a mesma pousada no mesmo período
+        reservas_existentes = self.db.search(Query().pousada_id == self.pousada_id)
 
-        # Verificar se a pousada está disponível
-        reservas_existentes = self.db.search((Query().pousada_id == self.pousada_id) & (Query().tipo == 'reserva'))
         for reserva in reservas_existentes:
-            # Se as datas da reserva atual estiverem dentro do período de uma reserva existente, a pousada não está disponível
-            if not (self.diaCheckout < reserva['diaCheckin'] or self.diaCheckin > reserva['diaCheckout']):
-                return {'message': 'A pousada não está disponível nas datas selecionadas!'}
+            # Verifica se as datas se sobrepõem
+            if (self.diaCheckin < reserva['diaCheckout'] and self.diaCheckout > reserva['diaCheckin']):
+                return {'message': 'Já existe uma reserva para este quarto neste período!'}
 
-        # Inserir nova reserva no banco de dados
+        # Cadastrar a nova reserva
         self.db.insert({
             'tipo': 'reserva',
             'cliente_cpf': self.cliente_cpf,
@@ -36,11 +32,7 @@ class Reserva:
             'metodoPagamento': self.metodoPagamento
         })
 
-        # Atualizar o estado da pousada para indisponível
-        self.db.update({'estado': 'indisponível'}, (Query().idPousada == self.pousada_id) & (Query().tipo == 'pousada'))
-
-        return {'reserva_id': self.pousada_id, 'message': 'Reserva cadastrada com sucesso!'}
-
+        return {'message': 'Reserva cadastrada com sucesso!'}
 
 
 

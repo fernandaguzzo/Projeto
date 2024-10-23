@@ -12,9 +12,11 @@ class Pousada:
     def cadastrarPousada(self):
         # Verificar se já existe uma pousada com este ID
         pousada_existente = self.db.search(Query().idPousada == self.idPousada)
+        
         if pousada_existente:
             return {'message': 'Já existe uma pousada com este ID!'}
 
+        # Cadastra a nova pousada
         self.db.insert({
             'tipo': 'pousada',
             'nome': self.nome,
@@ -23,5 +25,7 @@ class Pousada:
             'pessoasSuportadas': self.pessoasSuportadas,
             'limpeza': self.limpeza
         })
+        
         return {'message': 'Pousada cadastrada com sucesso!'}
+
 

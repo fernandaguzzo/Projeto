@@ -45,10 +45,6 @@
 </head>
 <body>
 
-<div class="form-container">
-    {% if error %}
-<p style="color: red;">{{ error }}</p>
-{% endif }
     <h2>Cadastrar Pousada</h2>
     <form action="/cadastrar_pousada" method="POST">
         <div class="form-group">
@@ -67,6 +63,7 @@
             <label for="estado">Estado</label>
             <input type="text" id="estado" name="estado" value="disponível" required>
         </div>
+
         <div class="form-group">
             <button type="submit">Cadastrar Pousada</button>
         </div>
