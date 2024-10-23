@@ -47,7 +47,6 @@ def listar_reservas():
     return render_template('listar_reservas.html', reservas=reservas)
 
 # Rota para o formulário de cadastro de pousada
-# Rota para o formulário de cadastro de pousada
 @app.route('/cadastrar_pousada', methods=['GET', 'POST'])
 def cadastrar_pousada():
     if request.method == 'POST':
@@ -55,24 +54,34 @@ def cadastrar_pousada():
         id_pousada = request.form.get('idPousada')
         pessoas_suportadas = request.form.get('pessoasSuportadas')
         estado = request.form.get('estado')
+        preco = request.form.get('preco')  # Novo campo para o preço
+
+        # Verifica se o campo preço foi preenchido corretamente
+        if not preco or preco.strip() == "":
+            return render_template('formulario_pousada.html', error="O campo preço é obrigatório.")
+        
+        try:
+            preco = float(preco)  # Converte para float se válido
+        except ValueError:
+            return render_template('formulario_pousada.html', error="Preço inválido. Insira um número válido.")
 
         pousada = Pousada(
             nome=nome,
             idPousada=int(id_pousada),
             estado=estado,
             pessoasSuportadas=int(pessoas_suportadas),
+            preco=preco,  # Defina o preço como float validado
             db=db
         )
 
         resultado = pousada.cadastrarPousada()
         if 'message' in resultado:
             if resultado['message'] == 'Pousada cadastrada com sucesso!':
-                return redirect(url_for('listar_pousadas'))  # Redireciona para a lista de pousadas
+                return redirect(url_for('listar_pousadas'))
             else:
                 return render_template('formulario_pousada.html', error=resultado['message'])
 
     return render_template('formulario_pousada.html')
-
 
 # Rota para listar pousadas
 @app.route('/listar_pousadas', methods=['GET'])
@@ -98,7 +107,28 @@ def buscar_pousada():
 
     return render_template('listar_reservas.html', reservas=reservas, pousada_encontrada=pousada_encontrada)
 
+# Rota para buscar pousada pelo preço
+@app.route('/buscar_pousada_preco', methods=['GET'])
+def buscar_pousada_preco():
+    pousada_id = request.args.get('pousada_id')
+    
+    # Busca a pousada pelo ID
+    pousada_encontrada = db.search(Query().idPousada == int(pousada_id))
+    
+    if pousada_encontrada:
+        pousada = pousada_encontrada[0]
+        return {
+            'success': True,
+            'nome': pousada['nome'],
+            'preco': pousada['preco']  # Certifique-se de que o preço está salvo no banco
+        }
+    else:
+        return {'success': False}, 404
+
 if __name__ == '__main__':
     app.run(debug=True)
+
+
+
 
 
