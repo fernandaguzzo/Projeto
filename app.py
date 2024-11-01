@@ -1,17 +1,16 @@
 from flask import Flask, render_template, request, redirect, url_for
 from tinydb import TinyDB, Query
 from reserva import Reserva
-from pousada import Pousada  # Certifique-se de que a classe Pousada já está implementada
+from pousada import Pousada  
 
 app = Flask(__name__)
 db = TinyDB('db.json')
 
-# Rota para o formulário de reserva
+
 @app.route('/')
 def formulario_reserva():
     return render_template('formulario_reserva.html')
 
-# Rota para cadastrar uma reserva
 @app.route('/cadastrar_reserva', methods=['POST'])
 def cadastrar_reserva():
     nome_cliente = request.form.get('nomeCompleto')
@@ -40,13 +39,13 @@ def cadastrar_reserva():
     else:
         return render_template('formulario_reserva.html', error=resultado['message'])
 
-# Rota para listar reservas
+
 @app.route('/listar_reservas', methods=['GET'])
 def listar_reservas():
-    reservas = db.search(Query().tipo == 'reserva')  # Busca todas as reservas no banco
+    reservas = db.search(Query().tipo == 'reserva')  
     return render_template('listar_reservas.html', reservas=reservas)
 
-# Rota para o formulário de cadastro de pousada
+
 @app.route('/cadastrar_pousada', methods=['GET', 'POST'])
 def cadastrar_pousada():
     if request.method == 'POST':
@@ -54,14 +53,14 @@ def cadastrar_pousada():
         id_pousada = request.form.get('idPousada')
         pessoas_suportadas = request.form.get('pessoasSuportadas')
         estado = request.form.get('estado')
-        preco = request.form.get('preco')  # Novo campo para o preço
+        preco = request.form.get('preco') 
 
-        # Verifica se o campo preço foi preenchido corretamente
+       
         if not preco or preco.strip() == "":
             return render_template('formulario_pousada.html', error="O campo preço é obrigatório.")
         
         try:
-            preco = float(preco)  # Converte para float se válido
+            preco = float(preco) 
         except ValueError:
             return render_template('formulario_pousada.html', error="Preço inválido. Insira um número válido.")
 
@@ -70,7 +69,7 @@ def cadastrar_pousada():
             idPousada=int(id_pousada),
             estado=estado,
             pessoasSuportadas=int(pessoas_suportadas),
-            preco=preco,  # Defina o preço como float validado
+            preco=preco, 
             db=db
         )
 
@@ -83,36 +82,35 @@ def cadastrar_pousada():
 
     return render_template('formulario_pousada.html')
 
-# Rota para listar pousadas
 @app.route('/listar_pousadas', methods=['GET'])
 def listar_pousadas():
-    pousadas = db.search(Query().tipo == 'pousada')  # Busca todas as pousadas no banco
+    pousadas = db.search(Query().tipo == 'pousada')  
     return render_template('listar_pousadas.html', pousadas=pousadas)
 
-# Rota para buscar pousada pelo ID nas reservas
+
 @app.route('/buscar_pousada', methods=['GET'])
 def buscar_pousada():
     pousada_id = request.args.get('pousada_id')
     
-    # Busca a pousada pelo ID
+  
     pousada_encontrada = db.search(Query().idPousada == int(pousada_id))
     
-    # Busca as reservas relacionadas a esta pousada
+   
     if pousada_encontrada:
         reservas = db.search(Query().pousada_id == int(pousada_id))
-        pousada_encontrada = pousada_encontrada[0]  # Obtém o primeiro resultado
+        pousada_encontrada = pousada_encontrada[0]  
     else:
-        reservas = []  # Se a pousada não for encontrada, não há reservas
+        reservas = []  
         pousada_encontrada = None
 
     return render_template('listar_reservas.html', reservas=reservas, pousada_encontrada=pousada_encontrada)
 
-# Rota para buscar pousada pelo preço
+
 @app.route('/buscar_pousada_preco', methods=['GET'])
 def buscar_pousada_preco():
     pousada_id = request.args.get('pousada_id')
     
-    # Busca a pousada pelo ID
+    
     pousada_encontrada = db.search(Query().idPousada == int(pousada_id))
     
     if pousada_encontrada:
@@ -120,7 +118,7 @@ def buscar_pousada_preco():
         return {
             'success': True,
             'nome': pousada['nome'],
-            'preco': pousada['preco']  # Certifique-se de que o preço está salvo no banco
+            'preco': pousada['preco']  
         }
     else:
         return {'success': False}, 404

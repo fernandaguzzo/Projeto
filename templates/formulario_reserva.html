@@ -1,57 +1,53 @@
 <form action="/cadastrar_reserva" method="POST">
-  <label for="nomeCompleto">Nome Completo</label>
-  <input type="text" id="nomeCompleto" name="nomeCompleto">
-  
-  <label for="cpf">CPF</label>
-  <input type="text" id="cpf" name="cpf">
-  
-  <label for="pousadaId">Pousada ID</label>
-  <input type="text" id="pousadaId" name="pousadaId">
-  <button type="button" id="checarPousada">Checar</button>
-  
-  <label for="nomePousada">Nome da Pousada</label>
-  <input type="text" id="nomePousada" name="nomePousada" readonly>
-  
-  <label for="diaCheckin">Data de Check-in</label>
-  <input type="date" id="diaCheckin" name="diaCheckin">
-  
-  <label for="diaCheckout">Data de Check-out</label>
-  <input type="date" id="diaCheckout" name="diaCheckout">
-  
-  <label for="quantidade">Número de Pessoas</label>
-  <input type="number" id="quantidade" name="quantidade">
-  
-  <label for="valor">Preço</label>
-  <input type="text" id="valor" name="valor" readonly>
-  
-  <label for="metodoPagamento">Método de Pagamento</label>
-  <input type="text" id="metodoPagamento" name="metodoPagamento">
-  
-  <button type="submit">Incluir</button>
+    <label for="nomeCompleto">Nome Completo</label>
+    <input type="text" id="nomeCompleto" name="nomeCompleto" required>
+    
+    <label for="cpf">CPF</label>
+    <input type="text" id="cpf" name="cpf" required>
+    
+    <label for="pousadaId">Pousada ID</label>
+    <input type="text" id="pousadaId" name="pousadaId" required>
+    
+    <label for="diaCheckin">Data de Check-in</label>
+    <input type="date" id="diaCheckin" name="diaCheckin" onchange="calcularValor()" required>
+    
+    <label for="diaCheckout">Data de Check-out</label>
+    <input type="date" id="diaCheckout" name="diaCheckout" onchange="calcularValor()" required>
+    
+    <label for="quantidade">Número de Pessoas</label>
+    <input type="number" id="quantidade" name="quantidade" required>
+
+   
+    <label for="valorDiaria">Valor da Diária</label>
+    <input type="text" id="valorDiaria" name="valorDiaria" onchange="calcularValor()" required>
+    
+    <label for="valor">Preço Total</label>
+    <input type="text" id="valor" name="valor" readonly>
+    
+    <label for="metodoPagamento">Método de Pagamento</label>
+    <input type="text" id="metodoPagamento" name="metodoPagamento" required>
+    
+    <button type="submit">Incluir</button>
 </form>
 
 <script>
-  document.getElementById('checarPousada').addEventListener('click', function() {
-      var pousadaId = document.getElementById('pousadaId').value;
-      
-      if (pousadaId) {
-          fetch(`/buscar_pousada_preco?pousada_id=${pousadaId}`)
-              .then(response => response.json())
-              .then(data => {
-                  if (data.success) {
-                      document.getElementById('nomePousada').value = data.nome;
-                      document.getElementById('valor').value = data.preco;
-                  } else {
-                      alert('Pousada não encontrada.');
-                  }
-              })
-              .catch(error => {
-                  console.error('Erro ao buscar pousada:', error);
-                  alert('Erro ao buscar pousada.');
-              });
-      } else {
-          alert('Por favor, insira um ID de pousada.');
-      }
-  });
+    function calcularValor() {
+        const diaCheckin = new Date(document.getElementById('diaCheckin').value);
+        const diaCheckout = new Date(document.getElementById('diaCheckout').value);
+        const valorDiaria = parseFloat(document.getElementById('valorDiaria').value);
+
+        if (diaCheckin && diaCheckout && !isNaN(valorDiaria)) {
+            
+            const quantidadeDias = Math.ceil((diaCheckout - diaCheckin) / (1000 * 60 * 60 * 24));
+
+            if (quantidadeDias > 0) {
+                const valorTotal = quantidadeDias * valorDiaria;
+                document.getElementById('valor').value = valorTotal.toFixed(2);
+            } else {
+                document.getElementById('valor').value = "0.00";
+            }
+        }
+    }
 </script>
+
 

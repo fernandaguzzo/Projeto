@@ -7,17 +7,17 @@ class Pousada:
         self.estado = estado
         self.pessoasSuportadas = pessoasSuportadas
         self.limpeza = limpeza
-        self.preco = preco  # Novo atributo para o preço da diária
+        self.preco = preco  
         self.db = db
 
     def cadastrarPousada(self):
-        # Verificar se já existe uma pousada com este ID
+        
         pousada_existente = self.db.search(Query().idPousada == self.idPousada)
         
         if pousada_existente:
             return {'message': 'Já existe uma pousada com este ID!'}
 
-        # Cadastra a nova pousada com o preço incluído
+       
         self.db.insert({
             'tipo': 'pousada',
             'nome': self.nome,
@@ -25,7 +25,7 @@ class Pousada:
             'estado': self.estado,
             'pessoasSuportadas': self.pessoasSuportadas,
             'limpeza': self.limpeza,
-            'preco': self.preco  # Adicionando o preço ao registro
+            'preco': self.preco  
         })
         
         return {'message': 'Pousada cadastrada com sucesso!'}
