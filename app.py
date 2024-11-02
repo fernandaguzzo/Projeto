@@ -109,8 +109,6 @@ def buscar_pousada():
 @app.route('/buscar_pousada_preco', methods=['GET'])
 def buscar_pousada_preco():
     pousada_id = request.args.get('pousada_id')
-    
-    
     pousada_encontrada = db.search(Query().idPousada == int(pousada_id))
     
     if pousada_encontrada:
@@ -122,6 +120,7 @@ def buscar_pousada_preco():
         }
     else:
         return {'success': False}, 404
+
 
 if __name__ == '__main__':
     app.run(debug=True)
